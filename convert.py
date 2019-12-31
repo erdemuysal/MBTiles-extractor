@@ -17,10 +17,14 @@ def setDir(d):
 ######################################
 # Let's do shit
 
-if not len(sys.argv) == 2:
-  print 'Please provide exactly 1 parameter - the mbtiles input filename'
+if not len(sys.argv) >= 2:
+  print 'Please provide at least 1 parameter - the mbtiles input filename'
   exit()
 
+if len(sys.argv) == 3:
+  output_schema = sys.argv[2]
+else:
+  output_schema = 'TMS'
 # Process input
 input_filename = sys.argv[1]
 dirname = input_filename[0:input_filename.index('.')]
@@ -53,7 +57,10 @@ os.chdir(dirname)
 for row in cursor:
   setDir(str(row[0]))
   setDir(str(row[1]))
-  output_file = open(str(row[2]) + out_format, 'wb')
+  if output_schema == 'XYZ':
+    output_file = open(str(((2**row[0]) - row[2] - 1)) + out_format, 'wb')
+  else:
+    output_file = open(str(row[2]) + out_format, 'wb')
   output_file.write(row[3])
   output_file.close()
   os.chdir('..')
